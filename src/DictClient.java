@@ -108,66 +108,6 @@ public class DictClient extends Frame implements ActionListener {
 		}
 	}
 	
-	public void actionPerformed(ActionEvent e) { // event action
-		try {
-			String str = new String(tf.getText());
-			byte buf[] = str.getBytes();
-			tf.setText("");
-			aSocket = new DatagramSocket();
-		 	aSocket.setSoTimeout(TIMEOUT);  // Maximum receive blocking time (milliseconds)	 
-		 	byte[] actionbuf = new byte[1000];
-		 	//System.out.println("buf:" + buf);
-		 	//System.out.println("aHost:" + aHost);
-		 	//System.out.println("serverPort:" + serverPort);
-		 	DatagramPacket request = new DatagramPacket(buf, buf.length, aHost, serverPort);
-			DatagramPacket reply = new DatagramPacket(actionbuf, actionbuf.length);
-			int tries = 0;      // Packets may be lost, so we have to keep trying
-			boolean receivedflag = false;
-		    
-			do {
-				aSocket.send(request);            // Send request
-				try {
-				    aSocket.receive(reply);       // Attempt receive reply 
-				    if (!reply.getAddress().equals(aHost)) {// Check host
-					throw new IOException("Received packet from an unknown source");
-				    }	
-		    		receivedflag = true;      
-				} 
-				catch (InterruptedIOException iioe) {  
-				    tries += 1;
-				    ta.setText("");
-				    ta.append("Timed out, " + (MAX_TRIES - tries) + " more tries...\n");
-				}
-			} while ((!receivedflag) && (tries < MAX_TRIES));
-		    
-			if (receivedflag) {
-				ta.setText("");
-				ta.append("Reply: " + new String(reply.getData()).trim());
-				//System.out.println("Reply: " + new String(reply.getData()).trim()+'\n');
-			} 
-			else {
-				ta.setText("");
-				ta.append("No response, host unaccessible...\n");
-		  	  	//System.out.println("No response, giving up...");
-		  	}
-		    //throw new SocketException("Testing SocketException");
-		    //throw new IOException("Testing IOException");
-		}
-		catch (SocketException se) {
-			ta.setText("");
-			ta.append("Socket ERROR: " + se.getMessage()+'\n');
-			//System.out.println("Socket ERROR: " + e.getMessage());
-		}
-		catch (IOException ioe) {
-			ta.setText("");
-			ta.append("IO ERROR2: "+ ioe.getMessage()+'\n');
-			//System.out.println("IO ERROR: "+ e.getMessage());
-		}
-		finally {
-			if (aSocket != null) 
-			aSocket.close();
-		}
-	}
 	
 	public static void main(String args[]){
 	// args give message contents and server hostname
